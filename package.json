@@ -1,7 +1,8 @@
 {
   "name": "@18x18az/ouija",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "1.0.1",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/18x18az/ouija.git",
   "author": "Alec Miller <alecmichaelmiller@gmail.com>",
   "license": "MIT",
@@ -19,6 +20,13 @@
     "dev": "tsc && node ./lib/index.js",
     "prepare" : "yarn run build"
   },
+  "files": [
+    "lib/**/*"
+  ],
+  "keywords": [
+    "VRC",
+    "VEX Robotics"
+  ],
   "devDependencies": {
     "@18x18az/rosetta": "^1.1.1",
     "ts-node": "^10.4.0"
