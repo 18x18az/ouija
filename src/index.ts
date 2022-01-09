@@ -2,8 +2,9 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 import BaseSocket from "isomorphic-ws";
 import { MESSAGE_TYPE, IPath, IMessage } from "@18x18az/rosetta";
 
+type MultiMessage = IMessage | Array <IMessage> | null
 export interface IConnectionCb {
-    (): IMessage | null;
+    (): MultiMessage;
 }
 
 export interface IMessageCb {
@@ -38,6 +39,16 @@ export class Websocket {
         this.ws.onmessage = this.#messageHandler.bind(this);
     }
 
+    #sendMulti(data: MultiMessage){
+        if(data){
+            if(Array.isArray(data)){
+                data.forEach(message => this.#send(message));
+            } else {
+                this.#send(data);
+            }
+        }
+    }
+
     #messageHandler(event: any) {
         const data = JSON.parse(event.data) as IMessage;
         const type = data.type;
@@ -58,22 +69,18 @@ export class Websocket {
     #connect() {
         console.log("Connected to the server");
         if (!this.hasConnected) {
-            const initialMessage = this.#initialConnect();
+            this.#initialConnect();
         }
 
         const message = this.connectCb();
-        if(message){
-            this.#send(message);
-        }
+        this.#sendMulti(message);
     }
 
     #initialConnect() {
         console.log("Initial connection");
         this.hasConnected = true;
         const initialMessage = this.initialConnectCb();
-        if(initialMessage){
-            this.#send(initialMessage);
-        }
+        this.#sendMulti(initialMessage);
     }
 
     post(path: IPath, payload: any) {
