@@ -1,6 +1,6 @@
 {
   "name": "@18x18az/ouija",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/18x18az/ouija.git",

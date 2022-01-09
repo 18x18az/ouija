@@ -58,16 +58,22 @@ export class Websocket {
     #connect() {
         console.log("Connected to the server");
         if (!this.hasConnected) {
-            this.#initialConnect();
+            const initialMessage = this.#initialConnect();
         }
 
-        this.connectCb();
+        const message = this.connectCb();
+        if(message){
+            this.#send(message);
+        }
     }
 
     #initialConnect() {
         console.log("Initial connection");
         this.hasConnected = true;
-        this.initialConnectCb();
+        const initialMessage = this.initialConnectCb();
+        if(initialMessage){
+            this.#send(initialMessage);
+        }
     }
 
     post(path: IPath, payload: any) {
