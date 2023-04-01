@@ -8,97 +8,99 @@ export interface IConnectionCb {
 }
 
 export interface IMessageCb {
+	/* eslint-disable @typescript-eslint/no-explicit-any */
     (p: IPath, payload?: any): IMessage | null
 }
 
 function dummyConnectionCb() {
-    return null;
+	return null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function dummyMessageCb(p: IPath, payload: any) {
-    return null;
+	return null;
 }
 
 export class Websocket {
-    private ws: any;
-    private hasConnected: boolean = false;
+	private ws: any;
+	private hasConnected = false;
 
-    public initialConnectCb: IConnectionCb = dummyConnectionCb;
-    public connectCb: IConnectionCb = dummyConnectionCb;
+	public initialConnectCb: IConnectionCb = dummyConnectionCb;
+	public connectCb: IConnectionCb = dummyConnectionCb;
 
-    public getCb: IMessageCb = dummyMessageCb;
-    public postCb: IMessageCb = dummyMessageCb;
+	public getCb: IMessageCb = dummyMessageCb;
+	public postCb: IMessageCb = dummyMessageCb;
 
-    constructor(url: string) {
-        const options = {
-            WebSocket: BaseSocket
-        }
+	constructor(url: string) {
+		const options = {
+			WebSocket: BaseSocket
+		};
 
-        this.ws = new ReconnectingWebSocket(url, [], options);
-        this.ws.addEventListener('open', this.#connect.bind(this))
-        this.ws.onmessage = this.#messageHandler.bind(this);
-    }
+		this.ws = new ReconnectingWebSocket(url, [], options);
+		this.ws.addEventListener("open", this.#connect.bind(this));
+		this.ws.onmessage = this.#messageHandler.bind(this);
+	}
 
-    #sendMulti(data: MultiMessage){
-        if(data){
-            if(Array.isArray(data)){
-                data.forEach(message => this.#send(message));
-            } else {
-                this.#send(data);
-            }
-        }
-    }
+	#sendMulti(data: MultiMessage){
+		if(data){
+			if(Array.isArray(data)){
+				data.forEach(message => this.#send(message));
+			} else {
+				this.#send(data);
+			}
+		}
+	}
 
-    #messageHandler(event: any) {
-        const data = JSON.parse(event.data) as IMessage;
-        const type = data.type;
-        let response = null;
-        if (type === MESSAGE_TYPE.GET) {
-            response = this.getCb(data.path);
-        } else if (type === MESSAGE_TYPE.POST) {
-            response = this.postCb(data.path, data.payload);
-        } else {
-            console.log(`Unhandled type ${type}`);
-        }
+	#messageHandler(event: any) {
+		const data = JSON.parse(event.data) as IMessage;
+		const type = data.type;
+		let response = null;
+		if (type === MESSAGE_TYPE.GET) {
+			response = this.getCb(data.path);
+		} else if (type === MESSAGE_TYPE.POST) {
+			response = this.postCb(data.path, data.payload);
+		} else {
+			console.log(`Unhandled type ${type}`);
+		}
 
-        if (response) {
-            this.#send(response);
-        }
-    }
+		if (response) {
+			this.#send(response);
+		}
+	}
 
-    #connect() {
-        console.log("Connected to the server");
-        if (!this.hasConnected) {
-            this.#initialConnect();
-        }
+	#connect() {
+		console.log("Connected to the server");
+		if (!this.hasConnected) {
+			this.#initialConnect();
+		}
 
-        const message = this.connectCb();
-        this.#sendMulti(message);
-    }
+		const message = this.connectCb();
+		this.#sendMulti(message);
+	}
 
-    #initialConnect() {
-        console.log("Initial connection");
-        this.hasConnected = true;
-        const initialMessage = this.initialConnectCb();
-        this.#sendMulti(initialMessage);
-    }
+	#initialConnect() {
+		console.log("Initial connection");
+		this.hasConnected = true;
+		const initialMessage = this.initialConnectCb();
+		this.#sendMulti(initialMessage);
+	}
 
-    post(path: IPath, payload: any) {
-        this.#send({
-            type: MESSAGE_TYPE.POST,
-            path,
-            payload
-        });
-    }
+	post(path: IPath, payload: any) {
+		this.#send({
+			type: MESSAGE_TYPE.POST,
+			path,
+			payload
+		});
+	}
 
-    get(path: IPath) {
-        this.#send({
-            type: MESSAGE_TYPE.GET,
-            path
-        });
-    }
+	get(path: IPath) {
+		this.#send({
+			type: MESSAGE_TYPE.GET,
+			path
+		});
+	}
 
-    #send(message: IMessage) {
-        this.ws.send(JSON.stringify(message));
-    }
+	#send(message: IMessage) {
+		this.ws.send(JSON.stringify(message));
+	}
 }

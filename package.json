@@ -19,7 +19,9 @@
     "build": "tsc",
     "start": "node ./lib/index.js",
     "dev": "tsc && node ./lib/index.js",
-    "prepare": "yarn run build"
+    "prepare": "yarn run build",
+    "lint": "eslint --ext .ts --ignore-path .gitignore .",
+    "semantic-release": "semantic-release --branches release"
   },
   "files": [
     "lib/**/*"
@@ -30,6 +32,9 @@
   ],
   "devDependencies": {
     "@18x18az/rosetta": ">=1.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "eslint": "^8.37.0",
     "ts-node": "^10.4.0"
   },
   "peerDependencies": {
