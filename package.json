@@ -40,5 +40,10 @@
   },
   "peerDependencies": {
     "@18x18az/rosetta": ">=1.1.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
