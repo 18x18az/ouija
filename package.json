@@ -35,6 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "eslint": "^8.37.0",
+    "semantic-release": "^21.0.1",
     "ts-node": "^10.4.0"
   },
   "peerDependencies": {
